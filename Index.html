@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Check-In</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        #searchBar {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
+        .attendee {
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .check-in-btn {
+            padding: 10px;
+            font-size: 16px;
+        }
+        .checked-in {
+            background-color: green;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <input type="text" id="searchBar" placeholder="Search attendees...">
+    <div id="attendeeList"></div>
+    <button onclick="downloadCSV()">Download Checked-In List</button>
+    <script>
+        const attendees = [
+            { name: 'Sagar Shah', phone: '+917306650084' },
+            { name: 'Sai Anumakonda', phone: '+919502319857' },
+            { name: 'Sai Anusha Kavya B', phone: '+919491804311' },
+            { name: 'Sai Muralidhar Tatiraju', phone: '+19740200921' },
+            { name: 'Sailaja Adda', phone: '+919515133438' },
+            { name: 'Sajeeda Nasreen', phone: '+919989044854' },
+            { name: "Sandeep Gehlot", phone: "+919811298336", checkedIn: false, pmiId: ""  },
+  { name: "Sandeep Raukutam", phone: "+919949414070", checkedIn: false, pmiId: ""  },
+  { name: "Sandya", phone: "+919177733771", checkedIn: false, pmiId: ""  },
+  { name: "Sanket Mukherjee", phone: "+918860217724", checkedIn: false, pmiId: ""  },
+  { name: "SANTHOSH KUMAR VOOTNURI", phone: "+918220775522", checkedIn: false, pmiId: ""  },
+  { name: "SANTOSH KUMAR DASH", phone: "+919441295595", checkedIn: false, pmiId: ""  },
+  { name: "Santosha Maroorkar", phone: "+919703388123", checkedIn: false, pmiId: ""  },
+  { name: "Sappati Pradeep Kumar", phone: "+919908654724", checkedIn: false, pmiId: ""  },
+  { name: "Sarat Babu", phone: "+919010122272", checkedIn: false, pmiId: ""  },
+  { name: "Sateesh Kumar Chinta", phone: "+919849077850", checkedIn: false, pmiId: ""  },
+  { name: "Sathish Chirumamilla", phone: "+917507191626", checkedIn: false, pmiId: ""  },
+  { name: "Satya Koruprolu", phone: "+919154865679", checkedIn: false, pmiId: ""  },
+  { name: "Sayantan Bose", phone: "+917702266554", checkedIn: false, pmiId: ""  },
+  { name: "seema bhandarkar", phone: "+919686399226", checkedIn: false, pmiId: ""  },
+  { name: "seetapatirao chennapragada", phone: "+919848726612", checkedIn: false, pmiId: ""  },
+  { name: "Seshu Ganti", phone: "+919989136831", checkedIn: false, pmiId: ""  },
+  { name: "Shaik Nazia", phone: "+919948104165", checkedIn: false, pmiId: ""  },
+  { name: "Shailendra Rao Chegoori", phone: "+919032834351", checkedIn: false, pmiId: ""  },
+  { name: "Shalini Malladi", phone: "+919963106859", checkedIn: false, pmiId: ""  },
+  { name: "Shambo Banerjee", phone: "+918335855438", checkedIn: false, pmiId: ""  },
+  { name: "Sharadajyoti Ralapalli", phone: "+917715872404", checkedIn: false, pmiId: ""  },
+  { name: "Sheikh Sahanawaz Ahmed", phone: "+918886562255", checkedIn: false, pmiId: ""  },
+  { name: "Shriniwas Shantkumar Yeramwar", phone: "+918879002899", checkedIn: false, pmiId: ""  },
+  { name: "Shruti Sinha", phone: "+917989580145", checkedIn: false, pmiId: ""  },
+  { name: "Shyam N", phone: "+917760073455", checkedIn: false, pmiId: ""  },
+  { name: "Sita Mahalakshmi Durvasula", phone: "+9550361469", checkedIn: false, pmiId: ""  },
+  { name: "Sivakumar Gnanasambandam", phone: "+919849496358", checkedIn: false, pmiId: ""  },
+  { name: "Sivaprashanth Venkata Danturthy", phone: "+919000148928", checkedIn: false, pmiId: ""  },
+  { name: "SivaRamaKrishna Yanamandra", phone: "+919848123683", checkedIn: false, pmiId: ""  },
+  { name: "Smarana Basutkar", phone: "+918374342223", checkedIn: false, pmiId: ""  },
+  { name: "Smijo Vincent", phone: "+919885093770", checkedIn: false, pmiId: ""  },
+  { name: "Sohail Ahamad", phone: "+917406629027", checkedIn: false, pmiId: ""  },
+  { name: "Sonali Gondane", phone: "+917675050139", checkedIn: false, pmiId: ""  },
+  { name: "Sourajit Basu", phone: "+919665799493", checkedIn: false, pmiId: ""  },
+  { name: "sravanthi Valluripalli", phone: "+919949878564", checkedIn: false, pmiId: ""  },
+  { name: "Sree Lakshmi M", phone: "+919886876469", checkedIn: false, pmiId: ""  },
+  { name: "Sree Nallagatla", phone: "+919121065537", checkedIn: false, pmiId: ""  },
+  { name: "SREEMAN NARAYAN MISHRA", phone: "+919441275510", checkedIn: false, pmiId: ""  },
+  { name: "Sreeram Nagireddy", phone: "+919848215451", checkedIn: false, pmiId: ""  },
+  { name: "Sreevani Lakkaraju", phone: "+919849939482", checkedIn: false, pmiId: ""  },
+  { name: "Srikanth Tarigopula", phone: "+919849859704", checkedIn: false, pmiId: ""  },
+  { name: "Srilekha Kaluvakunta", phone: "+917032389797", checkedIn: false, pmiId: ""  },
+  { name: "Srinivas Gudivada", phone: "+919866556900", checkedIn: false, pmiId: ""  },
+  { name: "Srinivas reddy eticala", phone: "+919618899937", checkedIn: false, pmiId: ""  },
+  { name: "Srinivasa Rao Dudi", phone: "+919989066899", checkedIn: false, pmiId: ""  },
+  { name: "Srinivasa Rao Kunapareddy", phone: "+919223491191", checkedIn: false, pmiId: ""  },
+  { name: "Srinivasu Chowta", phone: "+919440410992", checkedIn: false, pmiId: ""  },
+  { name: "SRISAILAPU PRAVEEN", phone: "+919985309056", checkedIn: false, pmiId: ""  },
+  { name: "STEPHEN PAPPACHEN", phone: "+919676827474", checkedIn: false, pmiId: ""  },
+  { name: "Subrahmanyam", phone: "+918550991183", checkedIn: false, pmiId: ""  },
+  { name: "subrahmanyam chandragiri", phone: "+919989499773", checkedIn: false, pmiId: ""  },
+  { name: "Subramanya Sharma Ganti", phone: "+919618948614", checkedIn: false, pmiId: ""  },
+  { name: "Sudarshan Bolla", phone: "+919989648630", checkedIn: false, pmiId: ""  },
+  { name: "Sudhansu Sekhar Singh", phone: "+919866789735", checkedIn: false, pmiId: ""  },
+  { name: "Sujay Kumar", phone: "+917331178834", checkedIn: false, pmiId: ""  },
+  { name: "Suma", phone: "+919989845557", checkedIn: false, pmiId: ""  },
+  { name: "Sundara Srikrishna Pankaj Kompella", phone: "+919908130520", checkedIn: false, pmiId: ""  },
+  { name: "Suneel Yadavalli", phone: "+919560128853", checkedIn: false, pmiId: ""  },
+  { name: "Sunilkumar Krishnan", phone: "+917893602412", checkedIn: false, pmiId: ""  },
+  { name: "Sunny Chauhan", phone: "+919560546747", checkedIn: false, pmiId: ""  },
+  { name: "Suresh Bhat", phone: "+917995977354", checkedIn: false, pmiId: ""  },
+  { name: "Suresh Kumar Banda", phone: "+919985123212", checkedIn: false, pmiId: "" },
+  { name: "Suriyanarayanan Jeyapal", phone: "+919000156543", checkedIn: false, pmiId: "" },
+  { name: "Surya Chavatapalli", phone: "+919704768884", checkedIn: false, pmiId: "" },
+  { name: "Sushanta Banerjee", phone: "+917842710042", checkedIn: false, pmiId: "" },
+  { name: "Syamala Bai Nalavatula", phone: "+918074042934", checkedIn: false, pmiId: "" },
+  { name: "Syamala Bai Nalavatula", phone: "+918074042934", checkedIn: false, pmiId: "" },
+  { name: "Tarun Kumar Mandal", phone: "+919930812298", checkedIn: false, pmiId: "" },
+  { name: "TATA SURESH KUMAR", phone: "+919959398661", checkedIn: false, pmiId: "" },
+  { name: "Tavish Singh Chadha", phone: "+919966236170", checkedIn: false, pmiId: "" },
+  { name: "Teena Rajput", phone: "+917675917627", checkedIn: false, pmiId: "" },
+  { name: "TEJ KIRAN PULAPARTI", phone: "+919959800223", checkedIn: false, pmiId: "" },
+  { name: "Uday Shankar Rajan", phone: "+919493545391", checkedIn: false, pmiId: "" },
+  { name: "Udaya Bhaskar Chippa", phone: "+919959366266", checkedIn: false, pmiId: "" },
+  { name: "Ujwal Surwade", phone: "+919515103047", checkedIn: false, pmiId: "" },
+  { name: "VADDALAPU PAVAN KUMAR", phone: "+919441205757", checkedIn: false, pmiId: "" },
+  { name: "vadlamani srinivas jagannadha prasad", phone: "+919989101089", checkedIn: false, pmiId: "" },
+  { name: "Vasu T", phone: "+918885226064", checkedIn: false, pmiId: "" },
+  { name: "VEERA KISHORE REDDY DANDA", phone: "+919866667089", checkedIn: false, pmiId: "" },
+  { name: "Venkat Peri", phone: "+919849939482", checkedIn: false, pmiId: "" },
+  { name: "VENKATA CHINNABABU ELLURI", phone: "+917075985360", checkedIn: false, pmiId: "" },
+  { name: "Venkata Kasi Subrahmanyam Dudey", phone: "+919848993456", checkedIn: false, pmiId: "" },
+  { name: "Venkata Reddy Chirla", phone: "+919849863748", checkedIn: false, pmiId: "" },
+  { name: "VENKATA SIVA TEJA VEMURI", phone: "+919989867770", checkedIn: false, pmiId: "" },
+  { name: "Venkata Suresh Addepalli", phone: "+919848230020", checkedIn: false, pmiId: "" },
+  { name: "Venkatasubramanian S", phone: "+919176615180", checkedIn: false, pmiId: "" },
+  { name: "Vijay Kumar Sharoff", phone: "+918125142949", checkedIn: false, pmiId: "" },
+  { name: "Vijay S V", phone: "+919513496417", checkedIn: false, pmiId: "" },
+  { name: "Vijay Vemana", phone: "+919901300977", checkedIn: false, pmiId: "" },
+  { name: "Vikram Kanse", phone: "+918978887417", checkedIn: false, pmiId: "" },
+  { name: "Vikramsena Reddy", phone: "+919963476791", checkedIn: false, pmiId: "" },
+  { name: "Vinay Babu Tarala", phone: "+919989348878", checkedIn: false, pmiId: "" },
+  { name: "VINAY KUMAR CHOLLETI", phone: "+918790071736", checkedIn: false, pmiId: "" },
+  { name: "Virendra Vikram Vishen", phone: "+918588873921", checkedIn: false, pmiId: "" },
+  { name: "Vishweshwar reddy Kalavala", phone: "+13175064230", checkedIn: false, pmiId: "" },
+  { name: "VIVEK CHAUDHURY", phone: "+918141423168", checkedIn: false, pmiId: "" },
+  { name: "Vunnava Lakshmi Narayana", phone: "+919246418989", checkedIn: false, pmiId: "" },
+  { name: "Y Gopi rajendra", phone: "+918897619724", checkedIn: false, pmiId: "" },
+  { name: "Yamira Chava", phone: "+919885902229", checkedIn: false, pmiId: "" },
+  { name: "Yarnagula Suresh Kumar", phone: "+917637012754", checkedIn: false, pmiId: "" },
+  { name: "Yogesh Shivraj Deshpande", phone: "+919920060597", checkedIn: false, pmiId: "" },
+  { name: "Zakkam anil kumar", phone: "+919959349818", checkedIn: false, pmiId: "" }
+        ];
+
+        const checkedInAttendees = new Set();
+
+        function renderAttendeeList() {
+            const searchQuery = document.getElementById('searchBar').value.toLowerCase();
+            const attendeeList = document.getElementById('attendeeList');
+            attendeeList.innerHTML = '';
+
+            attendees.forEach((attendee, index) => {
+                if (attendee.name.toLowerCase().includes(searchQuery)) {
+                    const attendeeDiv = document.createElement('div');
+                    attendeeDiv.classList.add('attendee');
+
+                    const attendeeInfo = document.createElement('span');
+                    attendeeInfo.textContent = `${attendee.name} (${attendee.phone})`;
+                    
+                    const pmiInput = document.createElement('input');
+                    pmiInput.type = 'text';
+                    pmiInput.placeholder = 'Enter PMI ID';
+                    pmiInput.dataset.index = index;
+
+                    const checkInBtn = document.createElement('button');
+                    checkInBtn.classList.add('check-in-btn');
+                    checkInBtn.textContent = checkedInAttendees.has(index) ? 'Undo Check-In' : 'Check-In';
+                    if (checkedInAttendees.has(index)) {
+                        checkInBtn.classList.add('checked-in');
+                    }
+                    checkInBtn.onclick = () => toggleCheckIn(index, pmiInput.value, checkInBtn);
+
+                    attendeeDiv.appendChild(attendeeInfo);
+                    attendeeDiv.appendChild(pmiInput);
+                    attendeeDiv.appendChild(checkInBtn);
+
+                    attendeeList.appendChild(attendeeDiv);
+                }
+            });
+        }
+
+        function toggleCheckIn(index, pmiId, btn) {
+            if (checkedInAttendees.has(index)) {
+                checkedInAttendees.delete(index);
+                btn.textContent = 'Check-In';
+                btn.classList.remove('checked-in');
+            } else {
+                checkedInAttendees.add(index);
+                btn.textContent = 'Undo Check-In';
+                btn.classList.add('checked-in');
+            }
+            attendees[index].pmiId = pmiId;
+        }
+
+        function downloadCSV() {
+            let csvContent = 'Name,Phone,PMI ID\n';
+            attendees.forEach((attendee, index) => {
+                if (checkedInAttendees.has(index)) {
+                    csvContent += `${attendee.name},${attendee.phone},${attendee.pmiId || ''}\n`;
+                }
+            });
+
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'checked_in_attendees.csv';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
+        document.getElementById('searchBar').addEventListener('input', renderAttendeeList);
+
+        renderAttendeeList();
+    </script>
+</body>
+</html>
